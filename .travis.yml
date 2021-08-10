@@ -7,32 +7,54 @@ os: linux
 python:
   - "3.7.9"
 
-# Instalação de Módulos que são necessários para a Aplicação.
-install:
-  - pip install flask
-
-# Defini o script de Teste que deve rodar toda vez que o código for alterado.
-script:
-  - python -m unittest -v test || travis_terminate 1;
-  - echo "passei por aqui" 
-
-# Definir o Deploy no Heroku
-deploy:
-  - strategy: api
-    provider: heroku
-    api_key: $HEROKU_API_KEY
-    edge: true 
-    app: devopslab-5aso-lucas
-    on:
-      branch: main
-
-  - provider: gae
-    keyfile: ../lab-devops-cloud-5aso-320323-626ff2619aab.json
-    project: lab-devops-cloud-5aso-320323
-    on:
-      branch: main
-
 before_install:
   - openssl aes-256-cbc -K $encrypted_df44da40f911_key -iv $encrypted_df44da40f911_iv
     -in lab-devops-cloud-5aso-320323-626ff2619aab.json.enc -out ../lab-devops-cloud-5aso-320323-626ff2619aab.json
     -d
+
+
+jobs:
+  include:
+    - stage: Build
+      # Instalação de Módulos que são necessários para a Aplicação.
+      install:
+        - pip install flask
+      script:  # Defini o script de Teste que deve rodar toda vez que o código for alterado.
+        - coverage run test.py || travis_terminate 1;
+        - coverage report app.py || travis_terminate 1;
+        - coverage xml app.py || travis_terminate 1;
+
+      name: "Testes Unitarios"
+      # Defini o script de Teste que deve rodar toda vez que o código for alterado.
+      script:
+        - python -m unittest -v test || travis_terminate 1;
+        - echo "passei por aqui"
+
+    - stage: STG Deploy
+      script: skip
+      # Definir o Deploy no Heroku
+      deploy:
+       - strategy: api
+         provider: heroku
+         api_key: $HEROKU_API_KEY
+         edge: true
+         app: devopslab-5aso-lucas
+         on:
+          branch: main
+
+    - stage: STG TEST
+      script:
+        - curl https://devopslab-5aso-lucas.herokuapp.com/ | grep Hello || travis_terminate 1;
+
+    - stage: PROD Deploy
+      script: skip
+      # Definir o Deploy no Google Cloud
+      - provider: gae
+        keyfile: ../lab-devops-cloud-5aso-320323-626ff2619aab.json
+        project: lab-devops-cloud-5aso-320323
+        on:
+         branch: main
+
+    - stage: PROD TEST
+      script:
+        - curl https://lab-devops-cloud-5aso-320323.uc.r.appspot.com/ | grep Hello || travis_terminate 1;
