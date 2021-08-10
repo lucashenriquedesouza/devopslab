@@ -48,7 +48,7 @@ jobs:
 
     - stage: PROD Deploy
       script: skip
-      # Definir o Deploy no Google Cloud
+      # Definir o Deploy no Google Cloudd
       - provider: gae
         keyfile: ../lab-devops-cloud-5aso-320323-626ff2619aab.json
         project: lab-devops-cloud-5aso-320323
