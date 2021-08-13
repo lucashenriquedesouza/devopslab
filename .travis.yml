@@ -42,7 +42,7 @@ jobs:
 
     - stage: STG TEST
       script:
-        - curl https://devopslab-5aso-lucas.herokuapp.com/ | grep Laboratório || travis_terminate 1;
+        - curl https://devopslab-5aso-lucas.herokuapp.com/ | grep Hello || travis_terminate 1;
 
     - stage: PROD Deploy
       script: skip
@@ -56,7 +56,7 @@ jobs:
 
     - stage: PROD TEST
       script:
-        - curl https://lab-devops-cloud-5aso-320323.uc.r.appspot.com/ | grep Laboratório || travis_terminate 1;
+        - curl https://lab-devops-cloud-5aso-320323.uc.r.appspot.com/ | grep Hello || travis_terminate 1;
 
 addons:
   sonarcloud:
