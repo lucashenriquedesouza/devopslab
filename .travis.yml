@@ -25,6 +25,8 @@ jobs:
         - coverage run test.py || travis_terminate 1;
         - coverage report app.py || travis_terminate 1;
         - coverage xml app.py || travis_terminate 1;
+        - python -m unittest -v test || travis_terminate 1;
+        - sonar-scanner || travis_terminate 1;
 
     - stage: STG Deploy
       script: skip
@@ -55,3 +57,8 @@ jobs:
     - stage: PROD TEST
       script:
         - curl https://lab-devops-cloud-5aso-320323.uc.r.appspot.com/ | grep Hello || travis_terminate 1;
+
+addons:
+  sonarcloud:
+    organization: lucashenriquedesouza
+    token: ${SONAR_TOKEN}
